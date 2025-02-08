@@ -126,13 +126,6 @@ if uploaded_file:
     col1, col2 = st.columns(2)
 
     with col1:
-        # Visualization: Costs and Revenue by Job Type
-        st.subheader("Cost and Revenue by Job Type")
-        fig = px.bar(filtered_df, x='Job Type', y=['Actual Cost', 'Actual Revenue'], barmode='group',
-                    title="Costs and Revenues by Job Type", labels={"value": "Amount", "variable": "Metric"})
-        st.plotly_chart(fig)
-
-    with col2:
         ## Visualization: Margins by Job Type
         ## Bar Chart
         # st.subheader("Margins by Sector Name")
@@ -149,7 +142,25 @@ if uploaded_file:
               color_discrete_sequence=px.colors.qualitative.Set3  # Color scheme
              )
         st.plotly_chart(fig2)
+    with col2:
+        # Visualization: Costs and Revenue by Job Type
+        st.subheader("Cost and Revenue by Job Type")
+        fig = px.bar(filtered_df, x='Job Type', y=['Actual Cost', 'Actual Revenue'], barmode='group',
+                    title="Costs and Revenues by Job Type", labels={"value": "Amount", "variable": "Metric"})
+        st.plotly_chart(fig)
     # Get top 5 Customers and Revenue contributions
+    # st.subheader("Top Customers")
+    top_customers = filtered_df.groupby('Customer Name').agg({'Actual Revenue':'sum'}).sort_values(ascending = False,by = 'Actual Revenue').reset_index().head()
+    total_revenue = top_customers['Actual Revenue'].sum()
+    top_customers["percentage"] = (top_customers['Actual Revenue']/total_revenue)*100
+    st.subheader("Top 5 Customers by Revenue Contribution 🏆")
+    for idx,row in top_customers.iterrows():
+        col1,col2 = st.columns([3,4])
+        with col1:
+            st.markdown(f"{row['Customer Name']}")
+        with col2:
+            st.progress(float(row['percentage']/100))
+            st.caption(f"{row['percentage']:.1f}%")
 
     # Data Preview in an Expander
     rows = st.selectbox('Rows',options = [5,15,50,100],index = 0)
