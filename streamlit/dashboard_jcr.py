@@ -160,7 +160,16 @@ if uploaded_file:
             st.markdown(f"{row['Customer Name']}")
         with col2:
             st.progress(float(row['percentage']/100))
-            st.caption(f"{row['percentage']:.1f}%")
+            # st.caption(f"{format_number(row['Actual Revenue'])},{row['percentage']:.1f}%")
+            st.markdown(
+            f"""
+            <div style="display: flex; justify-content: space-between;">
+                <span><b>💰 ₹{format_number(row['Actual Revenue'])}</b></span>
+                <span><b>{row['percentage']:.1f}%</b></span>
+            </div>
+            """, 
+            unsafe_allow_html=True
+            )
 
     # Data Preview in an Expander
     rows = st.selectbox('Rows',options = [5,15,50,100],index = 0)
